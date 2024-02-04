@@ -1,6 +1,5 @@
 package org.example.hospital.data.dto;
 
-import org.assertj.core.util.Objects;
 import org.example.hospital.data.dto.convertes.toDto.PatientToDto;
 import org.example.hospital.data.dto.convertes.toEntity.PatientDtoToEntity;
 import org.example.hospital.data.entity.Card;
@@ -9,7 +8,6 @@ import org.example.hospital.data.entity.Procedure;
 import org.example.hospital.data.repository.ProcedureRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
