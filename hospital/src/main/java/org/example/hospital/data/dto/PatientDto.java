@@ -15,7 +15,6 @@ public class PatientDto {
     private String lastName;
     private String documentNumber;
 
-    private String fullName;
 
 
     @JsonBackReference

@@ -23,30 +23,31 @@ public class PatientToDtoTest {
 
     @Test
     public void mustConvertFromEntityToDTO() {
-        // Создание процедур с "идентификаторами"
+
+
+
         Procedure procedure1 = new Procedure(1L, "Procedure1", 30, new HashSet<>());
         Procedure procedure2 = new Procedure(2L, "Procedure2", 45, new HashSet<>());
         Set<Procedure> procedures = new HashSet<>();
         procedures.add(procedure1);
         procedures.add(procedure2);
 
-        // Создание пациента с процедурами
+
         Patient patient = new Patient(10L, "John", "Doe", "123456", null, procedures);
 
-        // Предположим, что у нас есть объект Card
-        // Card card = new Card(5L, "Diagnosis example", "Recommendations example", patient);
-        // patient.setCard(card);
 
-        // Конвертация в DTO
+         Card card = new Card(5L, "Diagnosis example", "Recommendations example", patient);
+         patient.setCard(card);
+
+
         PatientDto patientDto = patientToDto.apply(patient);
 
-        // Проверки
+
         assertThat(patientDto.getPatientID()).isEqualTo(patient.getPatientID());
         assertThat(patientDto.getFirstName()).isEqualTo(patient.getFirstName());
         assertThat(patientDto.getLastName()).isEqualTo(patient.getLastName());
         assertThat(patientDto.getDocumentNumber()).isEqualTo(patient.getDocumentNumber());
 
-        // Проверка идентификаторов процедур
         Set<Long> expectedProcedureIds = procedures.stream().map(Procedure::getProcedureID).collect(Collectors.toSet());
         assertThat(patientDto.getProcedureIds()).containsExactlyInAnyOrderElementsOf(expectedProcedureIds);
     }
