@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class CardToDtoTest {
+public class CardConvertersTest {
 
     @Autowired
     private CardToDto cardToDto;

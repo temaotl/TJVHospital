@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class PatientToDtoTest {
+public class PatientConvertersTest {
 
     @Autowired
     private PatientToDto patientToDto;

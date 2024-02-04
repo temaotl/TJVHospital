@@ -15,6 +15,6 @@ public class ProcedureDto {
     Long procedureID;
     String name;
     int duration;
-    private Set<Long> patientPatientIds = new HashSet<>();
+    private Set<Long> patientIds = new HashSet<>();
 
 }

@@ -1,8 +1,10 @@
 package org.example.hospital.config;
 
 import org.example.hospital.data.dto.PatientDto;
+import org.example.hospital.data.dto.ProcedureDto;
 import org.example.hospital.data.entity.Patient;
 import org.example.hospital.data.entity.Procedure;
+import org.example.hospital.data.repository.PatientRepository;
 import org.example.hospital.data.repository.ProcedureRepository;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -18,9 +20,12 @@ import java.util.stream.Collectors;
 public class ModelMapperConfig {
 
     private final ProcedureRepository procedureRepository;
+    private final PatientRepository patientRepository;
 
-    public ModelMapperConfig(ProcedureRepository procedureRepository) {
+
+    public ModelMapperConfig(ProcedureRepository procedureRepository, PatientRepository patientRepository) {
         this.procedureRepository = procedureRepository;
+        this.patientRepository = patientRepository;
     }
 
     @Bean
@@ -39,6 +44,7 @@ public class ModelMapperConfig {
             }
         };
 
+
         Converter<Set<Long>, Set<Procedure>> procedureIdToProcedureConverter = new Converter<Set<Long>, Set<Procedure>>() {
             @Override
             public Set<Procedure> convert(MappingContext<Set<Long>, Set<Procedure>> context) {
@@ -54,6 +60,37 @@ public class ModelMapperConfig {
             }
         };
 
+
+        Converter <Set<Patient>, Set<Long>> patientToPatientIdConverter = new Converter<Set<Patient>, Set<Long>>() {
+            @Override
+            public Set<Long> convert(MappingContext<Set<Patient>, Set<Long>> context) {
+                if(context.getSource() == null){
+                    return null;
+                }
+                return  context.getSource().stream()
+                        .map(Patient::getPatientID)
+                        .collect(Collectors.toSet());
+            }
+        };
+
+        Converter < Set<Long>, Set<Patient>> patientIdToPatientConverter = new Converter<Set<Long>, Set<Patient>>() {
+
+            @Override
+            public Set<Patient> convert(MappingContext<Set<Long>, Set<Patient>> context) {
+                if ( context.getSource() == null){
+                    return null;
+                }
+                Set<Patient> patientSet = new HashSet<>();
+                for (Long i : context.getSource())
+                {
+                    patientRepository.findById(i).ifPresent(patientSet::add);
+                }
+                return patientSet;
+            }
+        };
+
+
+
         modelMapper.typeMap(Patient.class, PatientDto.class).addMappings(mapper ->
                 mapper.using(procedureToProcedureIdConverter).map(Patient::getProcedures, PatientDto::setProcedureIds)
 
@@ -61,6 +98,15 @@ public class ModelMapperConfig {
        modelMapper.typeMap(PatientDto.class, Patient.class).addMappings(
                mapper -> mapper.using(procedureIdToProcedureConverter)
                        .map(PatientDto::getProcedureIds,Patient::setProcedures)
+       );
+
+       modelMapper.typeMap(Procedure.class, ProcedureDto.class).addMappings(
+               mapper -> mapper.using(patientToPatientIdConverter).map(Procedure::getPatients,ProcedureDto::setPatientIds)
+       );
+
+       modelMapper.typeMap(ProcedureDto.class,Procedure.class).addMappings(
+               mapper -> mapper.using(patientIdToPatientConverter)
+                       .map(ProcedureDto::getPatientIds,Procedure::setPatients)
        );
 
         return modelMapper;
