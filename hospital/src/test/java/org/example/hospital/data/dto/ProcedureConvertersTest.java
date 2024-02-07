@@ -35,14 +35,14 @@ public class ProcedureConvertersTest {
 
     @Test
     public void mustConvertFromEntityToDTO() {
-        // Создаем пациента для связи
+
         Patient patient = new Patient();
         patient.setFirstName("John");
         patient.setLastName("Doe");
         patient.setDocumentNumber("123456789");
         patientRepository.save(patient);
 
-        // Создаем процедуру
+
         Procedure procedure = new Procedure();
         procedure.setName("MRI Scan");
         procedure.setDuration(60);
@@ -52,7 +52,7 @@ public class ProcedureConvertersTest {
 
         ProcedureDto procedureDto = procedureToDto.apply(procedure);
 
-        // Проверки
+
         assertThat(procedureDto.getProcedureID()).isEqualTo(procedure.getProcedureID());
         assertThat(procedureDto.getName()).isEqualTo(procedure.getName());
         assertThat(procedureDto.getDuration()).isEqualTo(procedure.getDuration());
@@ -68,7 +68,7 @@ public class ProcedureConvertersTest {
         patient.setDocumentNumber("123456789");
         patientRepository.save(patient);
 
-        // Создаем процедуру
+
         Procedure procedure = new Procedure();
         procedure.setName("MRI Scan");
         procedure.setDuration(60);

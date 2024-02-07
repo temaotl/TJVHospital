@@ -109,6 +109,11 @@ public class ModelMapperConfig {
                        .map(ProcedureDto::getPatientIds,Procedure::setPatients)
        );
 
+       // skip null value for update
+       modelMapper.getConfiguration()
+               .setSkipNullEnabled(true);
+
+
         return modelMapper;
     }
 }
