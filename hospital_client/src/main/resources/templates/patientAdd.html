@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Medical Database | Register new patient</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/style.css}">
+  <link rel="stylesheet" href="/form_style.css">
+</head>
+<body>
+<h1>Register new patient</h1>
+
+<div class="d-flex justify-content-center">
+<div class="row">
+  <div class="col">
+    <form action="#" th:action="@{/patients}" th:object="${patient}" method="POST">
+      <h2> Patient Info</h2>
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" class="form-control" th:field="*{firstName}">
+      </div>
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" class="form-control" th:field="*{lastName}">
+      </div>
+      <div class="form-group">
+        <label for="documentNumber">Document Number</label>
+        <input type="text" id="documentNumber" class="form-control" th:field="*{documentNumber}">
+      </div>
+      <h2> Card Info</h2>
+      <div class="form-group">
+        <label for="diagnosis">Diagnosis</label>
+        <input type="text" id="diagnosis" class="form-control" th:field="*{card.diagnosis}">
+      </div>
+      <div class="form-group">
+        <label for="doctorRecommendations">Doctor Recommendations</label>
+        <input type="text" id="doctorRecommendations" class="form-control" th:field="*{card.doctorRecommendations}">
+      </div>
+      <h2> Procedure Info</h2>
+      <div class="p-3 border rounded">
+        <div th:each="procedure : ${procedures}">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" th:value="${procedure.procedureID}" th:name="procedureIds" />
+            <label class="form-check-label" th:text="${procedure.name}"></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <input type="submit" class="btn btn-primary" />
+      </div>
+    </form>
+  </div>
+  <div class="col"></div>
+  <div class="col"></div>
+</div>
+</div>
+
+
+<p><a href="/patients"><i title="Back to list of patients" class="material-icons" style="size: 10px; margin-left: 30px; margin-top: 10px;"/>menu_open</a></p>
+</body>
+</html>
