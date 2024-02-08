@@ -45,8 +45,8 @@ public class ProcedureService extends AbstractCrudService<ProcedureDto,Long, Pro
                 .collect(Collectors.toSet());
 
 
-        Set<Long> patientIdsToAdd = dto.getPatientIds() == null ? Collections.emptySet() :
-                new HashSet<>(dto.getPatientIds());
+        Set<Long> patientIdsToAdd = new HashSet<>(dto.getPatientIds() == null ? Collections.emptySet() :
+                new HashSet<>(dto.getPatientIds()));
         patientIdsToAdd.removeAll(currentPatientIds);
 
         Set<Long> patientIdsToRemove = new HashSet<>(currentPatientIds);
