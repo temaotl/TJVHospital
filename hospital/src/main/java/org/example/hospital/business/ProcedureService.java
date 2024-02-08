@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -31,25 +32,7 @@ public class ProcedureService extends AbstractCrudService<ProcedureDto,Long, Pro
     }
 
 
-    private Set<Patient> updatePatientsAssociation(Procedure procedure, Set<Long> patientIds) {
-        Set<Patient> tmpSetOfNewPatient = new HashSet<>();
-        if (patientIds == null) {
-            for (Patient patient : procedure.getPatients()) {
-                patient.getProcedures().remove(procedure);
-            }
-        } else {
 
-            for (Patient patient : procedure.getPatients()) {
-                if (!patientIds.contains(patient.getPatientID())) {
-                    patient.getProcedures().remove(procedure);
-                } else {
-                    tmpSetOfNewPatient.add(patient);
-                }
-            }
-
-        }
-        return tmpSetOfNewPatient;
-    }
 
     @Override
     @Transactional
@@ -57,20 +40,41 @@ public class ProcedureService extends AbstractCrudService<ProcedureDto,Long, Pro
         Procedure existingProcedure = procedureRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Procedure not found with ID: " + id));
 
-        Set<Patient> updatedPatients = updatePatientsAssociation(existingProcedure, dto.getPatientIds());
-        modelMapper.map(dto, existingProcedure);
+        Set<Long> currentPatientIds = existingProcedure.getPatients().stream()
+                .map(Patient::getPatientID)
+                .collect(Collectors.toSet());
 
+
+        Set<Long> patientIdsToAdd = dto.getPatientIds() == null ? Collections.emptySet() :
+                new HashSet<>(dto.getPatientIds());
+        patientIdsToAdd.removeAll(currentPatientIds);
+
+        Set<Long> patientIdsToRemove = new HashSet<>(currentPatientIds);
         if (dto.getPatientIds() != null) {
-            Set<Long> existingPatientIds = existingProcedure.getPatients().stream()
-                    .map(Patient::getPatientID)
-                    .collect(Collectors.toSet());
-
-            dto.getPatientIds().stream()
-                    .filter(patientId -> !existingPatientIds.contains(patientId))
-                    .forEach(patientId -> patientRepository.findById(patientId).ifPresent(updatedPatients::add));
+            patientIdsToRemove.removeAll(dto.getPatientIds());
         }
 
-        existingProcedure.setPatients(updatedPatients);
+
+        patientIdsToRemove.forEach(patientId -> {
+            Patient patient = patientRepository.findById(patientId)
+                    .orElseThrow(() -> new NoSuchElementException("Patient not found with ID: " + patientId));
+            existingProcedure.getPatients().remove(patient);
+            patient.getProcedures().remove(existingProcedure);
+        });
+
+
+        patientIdsToAdd.forEach(patientId -> {
+            Patient patient = patientRepository.findById(patientId)
+                    .orElseThrow(() -> new NoSuchElementException("Patient not found with ID: " + patientId));
+            existingProcedure.getPatients().add(patient);
+            patient.getProcedures().add(existingProcedure);
+        });
+
+
+        modelMapper.map(dto, existingProcedure);
+
+
         procedureRepository.save(existingProcedure);
     }
+
 }
