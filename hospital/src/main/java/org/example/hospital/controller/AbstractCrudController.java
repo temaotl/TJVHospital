@@ -4,6 +4,7 @@ package org.example.hospital.controller;
 
 import org.example.hospital.business.AbstractCrudService;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,15 @@ public abstract class AbstractCrudController<E, D, R extends CrudRepository<E, L
         Optional<E> entity = service.readById(id);
         return entity.map(e -> ResponseEntity.ok(toDtoConverter.apply(e)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
+    @PostMapping
+    public ResponseEntity<D> create(@RequestBody D dto) {
+        E entity = toEntityConverter.apply(dto);
+        E savedEntity = service.create(entity);
+        D savedDto = toDtoConverter.apply(savedEntity);
+        return new ResponseEntity<>(savedDto, HttpStatus.CREATED);
     }
 
 

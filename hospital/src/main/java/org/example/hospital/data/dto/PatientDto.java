@@ -15,9 +15,9 @@ public class PatientDto {
     private String lastName;
     private String documentNumber;
 
-    @JsonBackReference
+
     private CardDto card;
 
-    @JsonBackReference
+
     private Set<Long> procedureIds = new HashSet<>();
 }

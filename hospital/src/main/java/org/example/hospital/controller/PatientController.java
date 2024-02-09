@@ -12,13 +12,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
-import java.util.function.Function;
 
 @RestController
 @RequestMapping("/patients")
 public class PatientController extends AbstractCrudController<Patient, PatientDto, PatientRepository> {
     public PatientController(AbstractCrudService<PatientDto, Long, Patient, PatientRepository> service, PatientToDto toDtoConverter, PatientDtoToEntity toEntityConverter) {
         super(service, toDtoConverter, toEntityConverter);
+    }
+
+    @Override
+    @PostMapping
+    public ResponseEntity<PatientDto> create(@RequestBody PatientDto dto) {
+        Patient patient = toEntityConverter.apply(dto);
+        Patient savedPatient = service.create(patient);
+        PatientDto savedDto = toDtoConverter.apply(savedPatient);
+        return new ResponseEntity<>(savedDto, HttpStatus.CREATED);
     }
 
     @Override

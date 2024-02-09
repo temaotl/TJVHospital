@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
-import java.util.function.Function;
 
 @RestController
 @RequestMapping("/procedures")
@@ -20,6 +19,9 @@ public class ProcedureController extends AbstractCrudController<Procedure, Proce
     public ProcedureController(AbstractCrudService<ProcedureDto, Long, Procedure, ProcedureRepository> service, ProcedureToDto toDtoConverter, ProcedureDtoToEntity toEntityConverter) {
         super(service, toDtoConverter, toEntityConverter);
     }
+
+
+
 
     @Override
     @PatchMapping("/{id}")

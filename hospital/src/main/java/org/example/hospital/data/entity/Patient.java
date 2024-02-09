@@ -30,7 +30,7 @@ public class Patient {
 
     private String documentNumber;
 
-    @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL , orphanRemoval = true)
     private Card card;
 
     @ManyToMany(mappedBy = "patients", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

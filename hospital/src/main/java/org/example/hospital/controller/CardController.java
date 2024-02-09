@@ -23,6 +23,7 @@ public class CardController extends AbstractCrudController <Card, CardDto, CardR
     }
 
 
+
     @Override
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
