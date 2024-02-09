@@ -18,12 +18,7 @@ import java.util.stream.Collectors;
 public class PatientService extends AbstractCrudService<PatientDto,Long, Patient, PatientRepository> {
 
     private final ProcedureRepository procedureRepository;
-
     private final PatientRepository patientRepository;
-
-
-
-
 
     protected PatientService(Function<Patient, PatientDto> toDtoConverter, PatientRepository repository, Function<PatientDto, Patient> toEntityConverter, ModelMapper modelMapper, ProcedureRepository procedureRepository, PatientRepository patientRepository) {
         super(toDtoConverter, repository, toEntityConverter, modelMapper);
@@ -48,6 +43,16 @@ public class PatientService extends AbstractCrudService<PatientDto,Long, Patient
         return toDtoConverter.apply(savedPatient);
     }
 
+
+    @Override
+    public void deleteById(Long id) {
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow( () -> new NoSuchElementException("patient dont exist"));
+        patient.getProcedures().forEach(
+                procedure -> procedure.getPatients().remove(patient)
+        );
+        super.deleteById(id);
+    }
 
     @Override
     public void update(PatientDto dto, Long id) {
