@@ -33,6 +33,16 @@ public class ProcedureService extends AbstractCrudService<ProcedureDto,Long, Pro
 
 
     @Override
+    public ProcedureDto create(ProcedureDto dto) {
+        Procedure procedure = toEntityConverter.apply(dto);
+        procedure.getPatients().forEach(
+                patient -> patient.getProcedures().add(procedure)
+        );
+        Procedure saved = procedureRepository.save(procedure);
+        return toDtoConverter.apply(saved);
+    }
+
+    @Override
     @Transactional
     public void update(ProcedureDto dto, Long id) {
         Procedure existingProcedure = procedureRepository.findById(id)
