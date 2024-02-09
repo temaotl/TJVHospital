@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public abstract class AbstractCrudController<E, D, R extends CrudRepository<E, Long>> {
     protected final AbstractCrudService<D, Long, E, R> service;
@@ -28,7 +27,7 @@ public abstract class AbstractCrudController<E, D, R extends CrudRepository<E, L
 
     @GetMapping
     public ResponseEntity<List<D>> readAll() {
-        List<D> dtos = StreamSupport.stream(service.readAll().spliterator(), false)
+        List<D> dtos = service.readAll().stream()
                 .map(toDtoConverter)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
