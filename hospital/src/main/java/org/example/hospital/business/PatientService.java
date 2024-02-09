@@ -40,6 +40,10 @@ public class PatientService extends AbstractCrudService<PatientDto,Long, Patient
             card.setPatient(patient);
             patient.setCard(card);
         }
+        patient.getProcedures().forEach(
+                procedure -> procedure.getPatients().add(patient)
+        );
+
         Patient savedPatient = patientRepository.save(patient);
         return toDtoConverter.apply(savedPatient);
     }
