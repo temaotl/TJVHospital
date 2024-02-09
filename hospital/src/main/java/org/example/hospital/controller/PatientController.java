@@ -20,14 +20,6 @@ public class PatientController extends AbstractCrudController<Patient, PatientDt
         super(service, toDtoConverter, toEntityConverter);
     }
 
-    @Override
-    @PostMapping
-    public ResponseEntity<PatientDto> create(@RequestBody PatientDto dto) {
-        Patient patient = toEntityConverter.apply(dto);
-        Patient savedPatient = service.create(patient);
-        PatientDto savedDto = toDtoConverter.apply(savedPatient);
-        return new ResponseEntity<>(savedDto, HttpStatus.CREATED);
-    }
 
     @Override
     @PatchMapping("/{id}")

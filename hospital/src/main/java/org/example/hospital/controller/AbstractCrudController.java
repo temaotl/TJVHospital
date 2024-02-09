@@ -44,10 +44,7 @@ public abstract class AbstractCrudController<E, D, R extends CrudRepository<E, L
 
     @PostMapping
     public ResponseEntity<D> create(@RequestBody D dto) {
-        E entity = toEntityConverter.apply(dto);
-        E savedEntity = service.create(entity);
-        D savedDto = toDtoConverter.apply(savedEntity);
-        return new ResponseEntity<>(savedDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(service.create(dto), HttpStatus.CREATED);
     }
 
 

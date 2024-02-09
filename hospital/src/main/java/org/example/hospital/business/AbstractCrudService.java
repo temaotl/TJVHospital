@@ -15,19 +15,25 @@ import java.util.stream.StreamSupport;
 public abstract class AbstractCrudService <D,K,E,R extends CrudRepository<E,K> > {
 
     protected final Function <E, D> toDtoConverter;
+    protected final Function <D,E> toEntityConverter;
+
     protected final R  repository;
+
     private final ModelMapper modelMapper;
 
 
 
-    protected AbstractCrudService(Function<E, D> toDtoConverter, R repository, ModelMapper modelMapper) {
+    protected AbstractCrudService(Function<E, D> toDtoConverter, R repository, Function<D, E> toEntityConverter, ModelMapper modelMapper) {
         this.toDtoConverter = toDtoConverter;
         this.repository = repository;
+        this.toEntityConverter = toEntityConverter;
         this.modelMapper = modelMapper;
     }
 
     @Transactional
-    public E create(E entity) { return  repository.save(entity); }
+    public D create(D dto) {
+        return   toDtoConverter.apply( repository.save( toEntityConverter.apply(dto)  )  );
+    }
     public Optional<E> readById(K id) { return  repository.findById(id); }
 
     public  Set<E> readAll() {

@@ -1,17 +1,17 @@
 package org.example.hospital.business;
 
 import org.example.hospital.data.dto.PatientDto;
-import org.example.hospital.data.dto.convertes.toDto.PatientToDto;
 import org.example.hospital.data.entity.Card;
 import org.example.hospital.data.entity.Patient;
 import org.example.hospital.data.entity.Procedure;
-import org.example.hospital.data.repository.CardRepository;
+
 import org.example.hospital.data.repository.PatientRepository;
 import org.example.hospital.data.repository.ProcedureRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,26 +20,30 @@ public class PatientService extends AbstractCrudService<PatientDto,Long, Patient
     private final ProcedureRepository procedureRepository;
 
     private final PatientRepository patientRepository;
-    private final CardRepository cardRepository;
 
-    protected PatientService(PatientToDto toDtoConverter, PatientRepository repository, ModelMapper modelMapper, ProcedureRepository procedureRepository, PatientRepository patientRepository,
-                             CardRepository cardRepository) {
-        super(toDtoConverter, repository, modelMapper);
+
+
+
+
+    protected PatientService(Function<Patient, PatientDto> toDtoConverter, PatientRepository repository, Function<PatientDto, Patient> toEntityConverter, ModelMapper modelMapper, ProcedureRepository procedureRepository, PatientRepository patientRepository) {
+        super(toDtoConverter, repository, toEntityConverter, modelMapper);
         this.procedureRepository = procedureRepository;
         this.patientRepository = patientRepository;
-        this.cardRepository = cardRepository;
     }
+
 
     @Override
-    public Patient create(Patient entity) {
-
-        Card patientCard = entity.getCard();
-        if (patientCard != null && (patientCard.getCardID() == null || cardRepository.findById(patientCard.getCardID()).isEmpty())) {
-            entity.setCard(cardRepository.save(patientCard));
-            entity.getCard().setPatient(entity);
+    public PatientDto create(PatientDto dto) {
+        Patient patient = toEntityConverter.apply(dto);
+        if (dto.getCard() != null) {
+            Card card = patient.getCard();
+            card.setPatient(patient);
+            patient.setCard(card);
         }
-        return super.create(entity);
+        Patient savedPatient = patientRepository.save(patient);
+        return toDtoConverter.apply(savedPatient);
     }
+
 
     @Override
     public void update(PatientDto dto, Long id) {

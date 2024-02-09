@@ -1,7 +1,6 @@
 package org.example.hospital.business;
 
 import org.example.hospital.data.dto.ProcedureDto;
-import org.example.hospital.data.dto.convertes.toDto.ProcedureToDto;
 import org.example.hospital.data.entity.Patient;
 import org.example.hospital.data.entity.Procedure;
 import org.example.hospital.data.repository.PatientRepository;
@@ -14,6 +13,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,14 +24,12 @@ public class ProcedureService extends AbstractCrudService<ProcedureDto,Long, Pro
     private final ModelMapper modelMapper;
     private final PatientRepository patientRepository;
 
-    protected ProcedureService(ProcedureToDto toDtoConverter, ProcedureRepository repository, ModelMapper modelMapper, ProcedureRepository procedureRepository, PatientRepository patientRepository) {
-        super(toDtoConverter, repository, modelMapper);
+    protected ProcedureService(Function<Procedure, ProcedureDto> toDtoConverter, ProcedureRepository repository, Function<ProcedureDto, Procedure> toEntityConverter, ModelMapper modelMapper, ProcedureRepository procedureRepository, ModelMapper modelMapper1, PatientRepository patientRepository) {
+        super(toDtoConverter, repository, toEntityConverter, modelMapper);
         this.procedureRepository = procedureRepository;
-        this.modelMapper = modelMapper;
+        this.modelMapper = modelMapper1;
         this.patientRepository = patientRepository;
     }
-
-
 
 
     @Override
