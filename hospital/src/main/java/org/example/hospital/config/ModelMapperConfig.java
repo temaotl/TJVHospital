@@ -8,7 +8,6 @@ import org.example.hospital.data.repository.PatientRepository;
 import org.example.hospital.data.repository.ProcedureRepository;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,61 +31,48 @@ public class ModelMapperConfig {
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
-        Converter<Set<Procedure>, Set<Long>> procedureToProcedureIdConverter = new Converter<Set<Procedure>, Set<Long>>() {
-            @Override
-            public Set<Long> convert(MappingContext<Set<Procedure>, Set<Long>> context) {
-                if (context.getSource() == null) {
-                    return null;
-                }
-                return context.getSource().stream()
-                        .map(Procedure::getProcedureID)
-                        .collect(Collectors.toSet());
+        Converter<Set<Procedure>, Set<Long>> procedureToProcedureIdConverter = context -> {
+            if (context.getSource() == null) {
+                return null;
             }
+            return context.getSource().stream()
+                    .map(Procedure::getProcedureID)
+                    .collect(Collectors.toSet());
         };
 
 
-        Converter<Set<Long>, Set<Procedure>> procedureIdToProcedureConverter = new Converter<Set<Long>, Set<Procedure>>() {
-            @Override
-            public Set<Procedure> convert(MappingContext<Set<Long>, Set<Procedure>> context) {
-               if(context.getSource() == null){
-                   return  null;
-               }
-               Set<Procedure> procedureSet = new HashSet<>();
-               for( Long i : context.getSource()  )
-               {
-                   procedureRepository.findById(i).ifPresent(procedureSet::add);
-               }
-               return  procedureSet;
-            }
+        Converter<Set<Long>, Set<Procedure>> procedureIdToProcedureConverter = context -> {
+           if(context.getSource() == null){
+               return  null;
+           }
+           Set<Procedure> procedureSet = new HashSet<>();
+           for( Long i : context.getSource()  )
+           {
+               procedureRepository.findById(i).ifPresent(procedureSet::add);
+           }
+           return  procedureSet;
         };
 
 
-        Converter <Set<Patient>, Set<Long>> patientToPatientIdConverter = new Converter<Set<Patient>, Set<Long>>() {
-            @Override
-            public Set<Long> convert(MappingContext<Set<Patient>, Set<Long>> context) {
-                if(context.getSource() == null){
-                    return null;
-                }
-                return  context.getSource().stream()
-                        .map(Patient::getPatientID)
-                        .collect(Collectors.toSet());
+        Converter <Set<Patient>, Set<Long>> patientToPatientIdConverter = context -> {
+            if(context.getSource() == null){
+                return null;
             }
+            return  context.getSource().stream()
+                    .map(Patient::getPatientID)
+                    .collect(Collectors.toSet());
         };
 
-        Converter < Set<Long>, Set<Patient>> patientIdToPatientConverter = new Converter<Set<Long>, Set<Patient>>() {
-
-            @Override
-            public Set<Patient> convert(MappingContext<Set<Long>, Set<Patient>> context) {
-                if ( context.getSource() == null){
-                    return null;
-                }
-                Set<Patient> patientSet = new HashSet<>();
-                for (Long i : context.getSource())
-                {
-                    patientRepository.findById(i).ifPresent(patientSet::add);
-                }
-                return patientSet;
+        Converter < Set<Long>, Set<Patient>> patientIdToPatientConverter = context -> {
+            if ( context.getSource() == null){
+                return null;
             }
+            Set<Patient> patientSet = new HashSet<>();
+            for (Long i : context.getSource())
+            {
+                patientRepository.findById(i).ifPresent(patientSet::add);
+            }
+            return patientSet;
         };
 
 
