@@ -82,6 +82,8 @@ public class PatientService extends AbstractCrudService<PatientDto,Long, Patient
             existedPatient.getProcedures().add(procedure);
             procedure.getPatients().add(existedPatient);
         });
+        super.update(dto,id);
+
     }
 }
 

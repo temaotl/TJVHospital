@@ -21,13 +21,11 @@ public class ProcedureService extends AbstractCrudService<ProcedureDto,Long, Pro
 
     private final ProcedureRepository procedureRepository;
 
-    private final ModelMapper modelMapper;
     private final PatientRepository patientRepository;
 
-    protected ProcedureService(Function<Procedure, ProcedureDto> toDtoConverter, ProcedureRepository repository, Function<ProcedureDto, Procedure> toEntityConverter, ModelMapper modelMapper, ProcedureRepository procedureRepository, ModelMapper modelMapper1, PatientRepository patientRepository) {
+    protected ProcedureService(Function<Procedure, ProcedureDto> toDtoConverter, ProcedureRepository repository, Function<ProcedureDto, Procedure> toEntityConverter, ModelMapper modelMapper, ProcedureRepository procedureRepository, PatientRepository patientRepository) {
         super(toDtoConverter, repository, toEntityConverter, modelMapper);
         this.procedureRepository = procedureRepository;
-        this.modelMapper = modelMapper1;
         this.patientRepository = patientRepository;
     }
 
@@ -77,12 +75,7 @@ public class ProcedureService extends AbstractCrudService<ProcedureDto,Long, Pro
             existingProcedure.getPatients().add(patient);
             patient.getProcedures().add(existingProcedure);
         });
-
-
-        modelMapper.map(dto, existingProcedure);
-
-
-        procedureRepository.save(existingProcedure);
+        super.update(dto,id);
     }
 
 }

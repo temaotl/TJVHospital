@@ -1,5 +1,6 @@
 package org.example.hospital.business;
 
+import org.example.hospital.data.dto.CardDto;
 import org.example.hospital.data.dto.convertes.toDto.CardToDto;
 import org.example.hospital.data.entity.Card;
 import org.example.hospital.data.entity.Patient;
@@ -43,7 +44,7 @@ public class CardServiceTest {
         newCard.setDoctorRecommendations("Initial Recommendations");
         newCard.setPatient(testPatient);
 
-        Card savedCard = cardService.create(newCard);
+        CardDto savedCard = cardService.create(cardToDto.apply(newCard));
 
         assertThat(savedCard).isNotNull();
         assertThat(savedCard.getDiagnosis()).isEqualTo("Initial Diagnosis");
