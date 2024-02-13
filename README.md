@@ -23,6 +23,6 @@ The Online Hospital Management System is designed to facilitate the management o
  Access the API through your local server at `http://localhost:8080`.
 
 ## GIT BRANCH
---In the main and developer branches, you can find the new version without the Front-end.
---In the old branch, you can find everything including the Front-end.
+- In the main and developer branches, you can find the new version without the Front-end.
+- In the old branch, you can find everything including the Front-end.
 
