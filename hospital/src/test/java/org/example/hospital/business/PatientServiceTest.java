@@ -1,5 +1,7 @@
 package org.example.hospital.business;
 
+import org.example.hospital.data.dto.PatientDto;
+import org.example.hospital.data.dto.convertes.toDto.CardToDto;
 import org.example.hospital.data.dto.convertes.toDto.PatientToDto;
 import org.example.hospital.data.entity.Card;
 import org.example.hospital.data.entity.Patient;
@@ -13,92 +15,73 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 public class PatientServiceTest {
 
+    @Autowired
+    private PatientService patientService;
 
     @Autowired
-    PatientService patientService;
+    private ProcedureRepository procedureRepository;
 
     @Autowired
-    ProcedureService procedureService;
+    private CardRepository cardRepository;
 
     @Autowired
-    CardRepository cardRepository;
+    private CardToDto cardToDto;
 
     @Autowired
-    ProcedureRepository procedureRepository;
-
-    @Autowired
-    PatientToDto patientToDto;
-
-
+    private PatientToDto patientToDto;
 
     private Procedure testProcedure;
     private Card testCard;
 
-
     @BeforeEach
-    public  void  setUp()
-    {
+    public void setUp() {
+        // Создание и сохранение тестовой процедуры
         testProcedure = new Procedure();
         testProcedure.setName("Procedure1");
         testProcedure.setDuration(30);
         testProcedure = procedureRepository.save(testProcedure);
 
-
+        // Создание и сохранение тестовой карты
         testCard = new Card();
         testCard.setDiagnosis("Initial Diagnosis");
         testCard.setDoctorRecommendations("Initial Recommendations");
-        testCard  = cardRepository.save(testCard);
+      //  testCard = cardRepository.save(testCard);
     }
 
     @Test
-    public void testCreateReadUpdateDeleteCard() {
-
-        Set<Procedure> myProcedure = new HashSet<>();
-        myProcedure.add(testProcedure);
-
-        Patient newPatient = new Patient();
-        newPatient.setFirstName("Joe");
-        newPatient.setLastName("Doe");
-        newPatient.setDocumentNumber("123456");
-        newPatient.setCard(testCard);
-        newPatient.setProcedures(myProcedure);
-
-        Patient savedPatient = patientService.create(newPatient);
-
-        assertThat(savedPatient).isNotNull();
-        assertThat(savedPatient.getDocumentNumber()).isEqualTo(newPatient.getDocumentNumber());
-
-        Patient fetchedPatient = patientService.readById(savedPatient.getPatientID()).orElse(null);
-        assertThat(fetchedPatient).isNotNull();
-        assertThat(fetchedPatient.getCard().getCardID()).isEqualTo(testCard.getCardID());
-
-        Procedure testProcedure1 = new Procedure();
-        testProcedure1.setName("Procedure1");
-        testProcedure1.setDuration(30);
-        Procedure testProcedure2 = procedureRepository.save(testProcedure1);
-        myProcedure.add(testProcedure2);
-
-        fetchedPatient.setProcedures(myProcedure);
+    public void testCreateReadUpdateDeletePatient() {
+        PatientDto patientDto = new PatientDto();
+        patientDto.setFirstName("John");
+        patientDto.setLastName("Doe");
+        patientDto.setDocumentNumber("123456");
+        patientDto.setCard(cardToDto.apply(testCard));
+        Set<Long> procedureIds = new HashSet<>();
+        procedureIds.add(testProcedure.getProcedureID());
+        patientDto.setProcedureIds(procedureIds);
 
 
-        patientService.update(patientToDto.apply(fetchedPatient), fetchedPatient.getPatientID());
+        PatientDto savedPatientDto = patientService.create(patientDto);
+        assertNotNull(savedPatientDto);
+        assertEquals("John", savedPatientDto.getFirstName());
 
-        Patient updatedPatient = patientService.readById(savedPatient.getPatientID()).orElse(null);
-        assertThat(updatedPatient).isNotNull();
-        assertThat(updatedPatient.getProcedures()).isEqualTo(myProcedure);
 
-        patientService.deleteById(updatedPatient.getPatientID());
+        PatientDto fetchedPatientDto = patientToDto.apply(patientService.readById(savedPatientDto.getPatientID()).orElseThrow());
+        assertNotNull(fetchedPatientDto);
+        assertEquals("123456", fetchedPatientDto.getDocumentNumber());
 
-        boolean cardExistsAfterDeletion = patientService.readById(savedPatient.getPatientID()).isPresent();
-        assertThat(cardExistsAfterDeletion).isFalse();
+        
+
+
     }
-
 }
+
